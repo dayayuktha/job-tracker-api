@@ -13,3 +13,47 @@ datasource db {
   provider = "postgresql"
 }
 
+/* =======================
+   MODELS
+======================= */
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  plan      Plan     @default(FREE)
+  resumes   Resume[]
+  jobs      JobApplication[]
+  createdAt DateTime @default(now())
+}
+
+model Resume {
+  id            String   @id @default(uuid())
+  filePath      String
+  extractedText String
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  createdAt     DateTime @default(now())
+}
+
+model JobApplication {
+  id        String   @id @default(uuid())
+  company  String
+  role     String
+  status   JobStatus @default(APPLIED)
+  userId   String
+  user     User      @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+enum Plan {
+  FREE
+  PRO
+}
+
+enum JobStatus {
+  APPLIED
+  INTERVIEW
+  OFFER
+  REJECTED
+}
